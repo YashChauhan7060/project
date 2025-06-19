@@ -3,10 +3,12 @@ import logo from '../assets/logo.avif'
 import { useNavigate } from 'react-router-dom'
 import { authDataContext } from '../context/AuthContext'
 import axios from 'axios'
+import { userDataContext } from '../context/userContext'
 
 function Login() {
   let [show, setShow] = useState(false)
   let { serverUrl } = useContext(authDataContext)
+  let {userData,setUserData}=useContext(userDataContext)
   let navigate = useNavigate()
   let [email, setEmail] = useState("")
   let [password, setPassword] = useState("")
@@ -21,7 +23,6 @@ function Login() {
         email,
         password
       }, { withCredentials: true })
-      console.log(result)
       setUserData(result.data)
       navigate("/")
       setErr("")
@@ -29,8 +30,8 @@ function Login() {
       setEmail("")
       setPassword("")
     } catch (error) {
-      setErr(error.response?.data?.message || "Login failed");
-      setLoading(false)
+      setErr(error.response?.data?.message || "Signup failed");
+      setLoading(false);
     }
   }
   return (
