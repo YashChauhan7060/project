@@ -12,6 +12,7 @@ import { Navigate,useNavigate } from 'react-router-dom';
 
 function Nav() {
     let [activeSearch,setActiveSearch]=useState(false)
+    let [showPopup, setShowPopup] = useState(false);
     let {userData,setUserData}=useContext(userDataContext)
     let {serverUrl}=useContext(authDataContext)
     let navigate=useNavigate()
@@ -50,7 +51,7 @@ function Nav() {
 
         <div className='flex justify-center items-center gap-[20px] relative '>
 
-            <div className='w-[300px] min-h-[300px] bg-white shadow-lg absolute  top-[75px] rounded-lg flex flex-col items-center p-[20px] gap-[20px] right-[20px] lg:right-[100px]'>
+        {showPopup && <div className='w-[300px] min-h-[300px] bg-white shadow-lg absolute  top-[75px] rounded-lg flex flex-col items-center p-[20px] gap-[20px] right-[20px] lg:right-[100px]'>
                 <div className='w-[50px] h-[50px] rounded-full overflow-hidden cursor-pointer'>
                 <img src={profile} alt="" />
                 </div>
@@ -63,7 +64,8 @@ function Nav() {
                 <div>My Networks</div>
                 </div>
                 <button className='w-[100%] h-[40px] rounded-full border-2 border-[#ec4545] text-[#ec4545]' onClick={handleSignOut} >Sign Out</button>
-            </div>
+            </div>}
+            
             <div className='lg:flex flex-col items-center justify-center cursor-pointer text-gray-600 hidden' >
                 <IoMdHome className='w-[23px] h-[23px] text-gray-600'/>
                 <div>Home</div>
@@ -76,7 +78,7 @@ function Nav() {
                 <IoNotifications className='w-[23px] h-[23px] text-gray-600'/>
                 <div className='hidden md:block'>Notifications</div>
             </div>
-            <div className='w-[50px] h-[50px] rounded-full overflow-hidden cursor-pointer'>
+            <div className='w-[50px] h-[50px] rounded-full overflow-hidden cursor-pointer' onClick={()=>setShowPopup(prev=>!prev)} >
                 <img src={profile} alt="" />
             </div>
         </div>
