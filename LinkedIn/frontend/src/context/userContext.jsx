@@ -10,6 +10,7 @@ export const userDataContext=createContext()
 function UserContext({children}) {
 let [userData,setUserData]=useState(null)
 let {serverUrl}=useContext(authDataContext)
+let [edit,setEdit]=useState(false)
 
 const getCurrentUser=async ()=>{
   try{
@@ -28,7 +29,7 @@ useEffect(()=>{
 
 
   const value={
-    userData,setUserData
+    userData,setUserData,edit,setEdit
   }
   return (
     <div>
