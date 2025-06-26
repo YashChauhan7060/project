@@ -10,11 +10,44 @@ import EditProfile from '../components/EditProfile';
 import { useState } from 'react';
 import { RxCross1 } from "react-icons/rx";
 import { BsImage } from "react-icons/bs";
+import { useRef } from 'react';
+import { authDataContext } from '../context/AuthContext';
+import axios from 'axios';
 
 function Home() {
   let {userData,setUserData,edit,setEdit} = useContext(userDataContext)
+  let {serverUrl}=useContext(authDataContext)
   let [frontendImage,setFrontendImage]=useState("")
   let [backendImage,setBackendImage]=useState("")
+  let [description,setDescription]=useState("")
+  let image=useRef()
+  let [posting,setPosting]=useState(false)
+  let [uploadPost,setUploadPost]=useState(false)
+
+
+function handleImage(e){
+let file=e.target.files[0]
+setBackendImage(file)
+setFrontendImage(URL.createObjectURL(file))
+}
+
+async function handleUploadPost(){
+  setPosting(true)
+  try {
+    let formdata=new FormData()
+    formdata.append("description",description)
+    if(backendImage){
+      formdata.append("image",backendImage)
+    }
+let result=await axios.post(serverUrl+"/api/post/create",formdata,{withCredentials:true})
+console.log(result)
+setPosting(false)
+setUploadPost(false)
+  } catch (error) {
+    setPosting(false)
+    console.log(error);
+  }
+}
 
   return (
     <div className='w-full min-h-[100vh] bg-[#f0efe7] pt-[100px] flex items-center lg:items-start justify-center gap-[20px] px-[20px] flex-col lg:flex-row relative pb-[50px]'>
@@ -40,35 +73,41 @@ function Home() {
         <button className='w-[100%] h-[40px] my-[20px] rounded-full border-2 border-[#2dc0ff] text-[#2dc0ff] flex items-center justify-center gap-[10px]' onClick={()=>setEdit(true)} >Edit Profile <HiPencil /> </button>
       </div>
 
+    {uploadPost && <div className='w-full h-full bg-black fixed top-0 z-[100] left-0 opacity-[0.6]'>
+    </div>}
 
-    <div className='w-full h-full bg-black fixed top-0 z-[100] left-0 opacity-[0.6]'>
-    </div>
 
-    <div className='w-[90%] max-w-[500px] h-[600px] bg-white shadow-lg top-[100px] rounded-lg fixed z-[200] p-[20px] flex items-start justify-start flex-col gap-[20px]'>
-       <div className='absolute top-[20px] right-[20px] cursor-pointer  '><RxCross1 className='w-[25px] cursor-pointer h-[25px] text-gray-800 font-bold '/></div>
+    {uploadPost &&  <div className='w-[90%] max-w-[500px] h-[600px] bg-white shadow-lg top-[100px] rounded-lg fixed z-[200] p-[20px] flex items-start justify-start flex-col gap-[20px]'>
+       <div className='absolute top-[20px] right-[20px] cursor-pointer  '><RxCross1 className='w-[25px] cursor-pointer h-[25px] text-gray-800 font-bold '  onClick={()=>setUploadPost(false)}/></div>
        <div className='flex justify-start items-center gap-[10px]'>
          <div className='w-[70px] h-[70px] rounded-full overflow-hidden flex items-center justify-center cursor-pointer'>
             <img src={userData.profileImage || dp} alt="" className='h-full'/>
         </div>
         <div className='text-[22px]'>{`${userData.firstName} ${userData.lastName}`}</div>
         </div>
-        <textarea className={`w-full  outline-none border-none p-[10px] resize-none text-[19px]`} placeholder='what do you want to talk about..?'></textarea>
+        <textarea className={`w-full ${frontendImage?"h-[200px]":"h-[550px]"} outline-none border-none p-[10px] resize-none text-[19px]`}  placeholder='what do you want to talk about..?' value={description} onChange={(e)=>setDescription(e.target.value)}></textarea>
+        <input type="file" ref={image} hidden onChange={handleImage}/>
+        {frontendImage && (<div className='w-full h-[300px] overflow-hidden flex justify-center items-center rounded-lg' >
+            <img src={frontendImage || ""} alt="" className='h-full rounded-lg'/>
+          </div>
+        )}
 
 
 
         <div className='w-full h-[200px] flex flex-col'>
         <div className='p-[20px] flex items-center justify-start border-b-2 border-gray-500'>
-        <BsImage className='w-[24px] h-[24px] text-gray-500' />
+        <BsImage className='w-[24px] h-[24px] text-gray-500' onClick={()=>image.current.click()}/>
         </div>
         
 
         <div className='flex justify-end items-center' >
-          <button className='w-[100px] h-[50px] rounded-full bg-[#24b2ff] mt-[40px] text-white'>"Post"
+          <button className='w-[100px] h-[50px] rounded-full bg-[#24b2ff] mt-[40px] text-white' disabled={posting} onClick={handleUploadPost}>{posting?"Posting..." : "Post"}
           </button>
         </div>
        </div>
 
-    </div>
+    </div>}
+   
 
 
       
@@ -77,7 +116,7 @@ function Home() {
           <div className='w-[70px] h-[70px] rounded-full overflow-hidden flex items-center justify-center  cursor-pointer' >
             <img src={userData.profileImage || dp} alt="" className='h-full'/>
         </div>
-        <button className='w-[80%] h-[60px] border-2 rounded-full border-gray-500 flex items-center justify-start px-[20px] hover:bg-gray-200' >start a post</button>
+        <button className='w-[80%] h-[60px] border-2 rounded-full border-gray-500 flex items-center justify-start px-[20px] hover:bg-gray-200'  onClick={()=>setUploadPost(true)}>start a post</button>
         </div>
 
       </div>
