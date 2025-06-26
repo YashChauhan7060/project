@@ -6,9 +6,13 @@ import dp from "../assets/dp.png"
 import { FiPlus } from "react-icons/fi";
 import { FiCamera } from "react-icons/fi";
 import { useState } from 'react';
+import { useRef } from 'react';
+import { authDataContext } from '../context/AuthContext';
+import axios from 'axios';
 
 function EditProfile() {
     let { edit, setEdit, userData, setUserData } =useContext(userDataContext)
+    let {serverUrl}=useContext(authDataContext)
     let [firstName,setFirstName]=useState(userData.firstName || "")
     let [lastName,setLastName]=useState(userData.lastName || "")
     let [userName,setUserName]=useState(userData.userName || "")
@@ -28,7 +32,16 @@ function EditProfile() {
     title:"",
     company:"",
     description:""
-}) 
+})
+
+let [frontendProfileImage,setFrontendProfileImage]=useState(userData.profileImage || dp)
+let [backendProfileImage,setBackendProfileImage]=useState(null)
+let [frontendCoverImage,setFrontendCoverImage]=useState(userData.coverImage || null)
+let [backendCoverImage,setBackendCoverImage]=useState(null)
+let [saving,setSaving]=useState(false)
+
+const profileImage=useRef();
+const coverImage=useRef();
 
 function addSkill(e){
 e.preventDefault()
@@ -80,20 +93,67 @@ function removeExperience(exp){
     }  
 }
 
+function handleProfileImage(e){
+    let file=e.target.files[0]
+    setBackendProfileImage(file)
+    setFrontendProfileImage(URL.createObjectURL(file))
+}
+
+function handleCoverImage(e){
+    let file=e.target.files[0]
+    setBackendCoverImage(file)
+    setFrontendCoverImage(URL.createObjectURL(file))
+}
+
+const handleSaveProfile=async()=>{
+  setSaving(true)
+    try{
+        let formdata=new FormData()
+        formdata.append("firstName",firstName)
+        formdata.append("lastName",lastName)
+        formdata.append("userName",userName)
+        formdata.append("headline",headline)
+        formdata.append("location",location)
+        formdata.append("skills",JSON.stringify(skills))
+        formdata.append("education",JSON.stringify(education))
+        formdata.append("experience",JSON.stringify(experience))
+
+        if(backendProfileImage){
+        formdata.append("profileImage",backendProfileImage)
+        }
+        if(backendCoverImage){
+        formdata.append("coverImage",backendCoverImage)
+        }
+
+        let result=await axios.put(serverUrl+"/api/user/updateprofile",formdata,{withCredentials:true})
+        console.log(result);
+        setUserData(result.data)
+        setSaving(false)
+        setEdit(false)
+
+    } catch(error){
+        console.log(error);
+        setSaving(false)
+    }
+}
+
   return (
     <div className='w-full h-[100vh] fixed top-0  z-[100] flex justify-center items-center'>
+
+        <input type="file" accept='image/*' hidden ref={profileImage} onChange={handleProfileImage}/>
+        <input type="file" accept='image/*' hidden ref={coverImage} onChange={handleCoverImage}/>
       
       <div className='w-full h-full bg-black opacity-[0.5] absolute top-0 left-0'></div>
       <div className='w-[90%] max-w-[500px] h-[600px] bg-white relative overflow-auto z-[200] shadow-lg rounded-lg p-[10px]' >
         <div className='absolute top-[20px] right-[20px] cursor-pointer' onClick={()=>{setEdit(false)}} ><RxCross1 className='w-[25px] cursor-pointer h-[25px] text-gray-800 font-bold '/></div>
 
-        <div className='w-full h-[150px] bg-gray-500 rounded-lg mt-[40px] overflow-hidden'>
-            <img src="" alt="" className='w-full' />
+        <div className='w-full h-[150px] bg-gray-500 rounded-lg mt-[40px] overflow-hidden' onClick={()=>coverImage.current.click()} >
+            <img src={frontendCoverImage || null} alt="" className='w-full' />
             <FiCamera className='absolute right-[20px] top-[60px] w-[25px] h-[25px] text-white cursor-pointer' />
       </div>
 
-        <div className='w-[80px] h-[80px] rounded-full overflow-hidden absolute top-[150px] ml-[20px]' >
-            <img src={dp} alt="" className='w-full h-full'/>
+        <div className='w-[80px] h-[80px] rounded-full overflow-hidden absolute top-[150px] ml-[20px]'  onClick={()=>profileImage.current.click()}>
+            <img src={frontendProfileImage || null} alt="" className='w-full h-full'/>
         </div>
         <div className='w-[20px] h-[20px] bg-[#17c1ff] absolute top-[200px] left-[90px] rounded-full flex justify-center items-center cursor-pointer'>
           <FiPlus className='text-white' />
@@ -159,7 +219,7 @@ function removeExperience(exp){
       </div>
     </div>
 
-    <button className='w-[100%] h-[50px] rounded-full bg-[#24b2ff] mt-[40px] text-white'>Save Profile</button>
+    <button className='w-[100%] h-[50px] rounded-full bg-[#24b2ff] mt-[40px] text-white' disable={saving} onClick={()=>handleSaveProfile()}>{saving?"saving...":"Save Profile"}</button>
 
 </div>
 

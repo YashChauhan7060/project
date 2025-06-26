@@ -34,7 +34,7 @@ function Nav() {
 
 
   return (
-    <div className='w-full h-[80px] bg-white fixed top-0 shadow-lg flex justify-around items-center'>
+    <div className='w-full h-[80px] bg-[white] fixed top-0 shadow-lg flex justify-between md:justify-around items-center px-[10px] left-0 z-[80]'>
         <div className='flex justify-center items-center gap-[10px]'>
         <div onClick={ ()=>{
             setActiveSearch(false);
@@ -49,11 +49,11 @@ function Nav() {
         </form>
         </div>
 
-        <div className='flex justify-center items-center gap-[20px] relative '>
+        <div className='flex justify-center items-center gap-[20px]'>
 
-        {showPopup && <div className='w-[300px] min-h-[300px] bg-white shadow-lg absolute  top-[75px] rounded-lg flex flex-col items-center p-[20px] gap-[20px] right-[20px] lg:right-[100px]'>
+        {showPopup && <div className='w-[300px] min-h-[300px] bg-white shadow-lg absolute top-[75px] rounded-lg flex flex-col items-center p-[20px] gap-[20px] right-[20px] lg:right-[100px]'>
                 <div className='w-[50px] h-[50px] rounded-full overflow-hidden cursor-pointer'>
-                <img src={profile} alt="" />
+                <img src={userData.profileImage || profile} alt="" />
                 </div>
 
                 <div className='text-[19px] font-semibold text-gray-700'>{`${userData.firstName} ${userData.lastName}`}</div>
@@ -79,7 +79,7 @@ function Nav() {
                 <div className='hidden md:block'>Notifications</div>
             </div>
             <div className='w-[50px] h-[50px] rounded-full overflow-hidden cursor-pointer' onClick={()=>setShowPopup(prev=>!prev)} >
-                <img src={profile} alt="" />
+                <img src={userData.profileImage || profile} alt="" />
             </div>
         </div>
     </div>

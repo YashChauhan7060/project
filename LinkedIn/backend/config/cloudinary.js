@@ -12,12 +12,24 @@ const uploadOnCloudinary = async(filePath)=>{
             return null
         }
         const uploadResult = await cloudinary.uploader.upload(filePath)
-        fs.unlinkSync(filePath)
+        if (fs.existsSync(filePath)) {
+            try {
+                fs.unlinkSync(filePath);
+            } catch (err) {
+                console.log("Failed to delete file:", err.message);
+            }
+        }
         return uploadResult.secure_url
 
     }
     catch(error){
-        fs.unlinkSync(filePath)
+        if (fs.existsSync(filePath)) {
+            try {
+                fs.unlinkSync(filePath);
+            } catch (err) {
+                console.log("Failed to delete file in error:", err.message);
+            }
+        }
         console.log(error);
     }
 }
