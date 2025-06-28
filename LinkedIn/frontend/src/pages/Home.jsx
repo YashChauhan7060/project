@@ -13,9 +13,10 @@ import { BsImage } from "react-icons/bs";
 import { useRef } from 'react';
 import { authDataContext } from '../context/AuthContext';
 import axios from 'axios';
+import Post from '../components/Post';
 
 function Home() {
-  let {userData,setUserData,edit,setEdit} = useContext(userDataContext)
+  let {userData,setUserData,edit,setEdit,postData,setPostData} = useContext(userDataContext)
   let {serverUrl}=useContext(authDataContext)
   let [frontendImage,setFrontendImage]=useState("")
   let [backendImage,setBackendImage]=useState("")
@@ -118,6 +119,10 @@ setUploadPost(false)
         </div>
         <button className='w-[80%] h-[60px] border-2 rounded-full border-gray-500 flex items-center justify-start px-[20px] hover:bg-gray-200'  onClick={()=>setUploadPost(true)}>start a post</button>
         </div>
+
+      {postData.map((post,index)=>(
+        <Post key={index} id={post._id} description={post.description} author={post.author} image={post.image} like={post.like} comment={post.comment} createdAt={post.createdAt}/>
+        ))}
 
       </div>
 
