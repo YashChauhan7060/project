@@ -1,5 +1,6 @@
 import Post from "../models/Post.model.js"
 import uploadOnCloudinary from "../config/cloudinary.js"
+import { io } from "../index.js"
 // import Notification from "../models/"
 
 export const createPost = async(req,res)=>{
@@ -52,7 +53,8 @@ export const like =async (req,res)=>{
            
         }
         await post.save()
-    //   io.emit("likeUpdated",{postId,likes:post.like})
+
+        io.emit("likeUpdated",{postId,likes:post.like})
      return  res.status(200).json(post)
 
     } catch (error) {
@@ -78,7 +80,7 @@ export const comment=async (req,res)=>{
     //         relatedPost:postId
     //     })
     // }
-        // io.emit("commentAdded",{postId,comm:post.comment})
+        io.emit("commentAdded",{postId,comm:post.comment})
         return res.status(200).json(post)
 
     } catch (error) {

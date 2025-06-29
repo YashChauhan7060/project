@@ -11,6 +11,10 @@ import {authDataContext} from "../context/AuthContext.jsx"
 import axios from 'axios'
 import { userDataContext } from '../context/userContext.jsx'
 import { useEffect } from 'react'
+import { io } from "socket.io-client"
+
+let socket=io("http://localhost:8000")
+
 
 function Post({ id, author, like, comment, description, image,createdAt }) {
 
@@ -47,6 +51,24 @@ const handleComment=async (e)=>{
         }
       }
 
+
+      useEffect(()=>{
+        socket.on("likeUpdated",({postId,likes})=>{
+          if(postId==id){
+            setLikes(likes)
+          }
+        })
+        socket.on("commentAdded",({postId,comm})=>{
+          if(postId==id){
+            setComments(comm)
+          }
+        })
+
+        return ()=>{
+socket.off("likeUpdated")
+socket.off("commentAdded")
+        }
+      },[id])
 
     // useEffect(()=>{
     // getPost()
