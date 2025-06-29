@@ -1,5 +1,6 @@
 import Connection from "../models/connection.model.js"
 import User from "../models/user.model.js"
+import {io,userSocketMap} from "../index.js"
 
 export const sendConnection =async (req, res) => {
      try{
@@ -28,6 +29,16 @@ export const sendConnection =async (req, res) => {
   sender,
   receiver:id
  })
+
+ let receiverSocketId=userSocketMap.get(id)
+ let senderSocketId=userSocketMap.get(sender)
+
+if(receiverSocketId){
+io.to(receiverSocketId).emit("statusUpdate",{updatedUserId:sender,newStatus:"received"})
+}
+if(senderSocketId){
+    io.to(senderSocketId).emit("statusUpdate",{updatedUserId:id,newStatus:"pending"})
+}
 
 
   return res.status(200).json(newRequest)
@@ -64,9 +75,17 @@ export const acceptConnection=async (req,res)=>{
         })
 
         
+ let receiverSocketId=userSocketMap.get(userId)
+ let senderSocketId=userSocketMap.get(connection.sender._id.toString())
+
+if(receiverSocketId){
+io.to(receiverSocketId).emit("statusUpdate",{updatedUserId:connection.sender._id,newStatus:"disconnect"})
+}
+if(senderSocketId){
+    io.to(senderSocketId).emit("statusUpdate",{updatedUserId:userId,newStatus:"disconnect"})
+}       
 
         return res.status(200).json({message:"connection accepted"})
-
 
     } catch(error){
         return res.status(500).json({message:`connection accepted error ${error}`})
@@ -141,6 +160,15 @@ export const removeConnection = async (req, res) => {
 		await User.findByIdAndUpdate(myId, { $pull: { connection: otherUserId } });
 		await User.findByIdAndUpdate(otherUserId, { $pull: { connection: myId } });
       
+ let receiverSocketId=userSocketMap.get(otherUserId)
+ let senderSocketId=userSocketMap.get(myId)
+
+if(receiverSocketId){
+io.to(receiverSocketId).emit("statusUpdate",{updatedUserId:myId,newStatus:"connect"})
+}
+if(senderSocketId){
+    io.to(senderSocketId).emit("statusUpdate",{updatedUserId:otherUserId,newStatus:"connect"})
+}
 
 		return res.json({ message: "Connection removed successfully" });
 	} catch (error) {

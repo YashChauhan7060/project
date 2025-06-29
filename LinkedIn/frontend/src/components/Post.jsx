@@ -12,6 +12,7 @@ import axios from 'axios'
 import { userDataContext } from '../context/userContext.jsx'
 import { useEffect } from 'react'
 import { io } from "socket.io-client"
+import ConnectionButton from './ConnectionButton.jsx'
 
 let socket=io("http://localhost:8000")
 
@@ -89,6 +90,10 @@ socket.off("commentAdded")
                 <div className='text-[16px]'>{moment(createdAt).fromNow()}</div>
                 </div>
         </div>
+
+        <div>
+          {userData._id!=author._id &&  <ConnectionButton userId={author._id}/>}
+            </div>
       </div>
 
        <div className={`w-full ${!more?"max-h-[100px] overflow-hidden":""} pl-[50px]`}>{description}</div>

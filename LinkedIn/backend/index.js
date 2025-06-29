@@ -30,14 +30,27 @@ app.use("/api/auth",authRouter);
 app.use("/api/user",userRouter);
 app.use("/api/post",postRouter);
 app.use("/api/connection",connectionRouter)
+export const userSocketMap=new Map()
 
-io.on("connection",(socket)=>{
-    console.log("User connected:", socket.id);
+io.on("connection", (socket) => {
+    socket.on("register", (userId) => {
+        if (userId) {
+            userSocketMap.set(userId, socket.id);
+            console.log(userSocketMap);
+        }
+    });
 
-   socket.on("disconnect",(socket)=>{
-    console.log("User disconnected:", socket.id);
-})
-   }) 
+    socket.on("disconnect", () => {
+        // Find the userId for this socket
+        for (let [userId, socketId] of userSocketMap.entries()) {
+            if (socketId === socket.id) {
+                userSocketMap.delete(userId);
+                console.log("User disconnected:", userId);
+                break;
+            }
+        }
+    });
+});
 
 app.get('/', (req, res) => {
     res.send("Hello World");
