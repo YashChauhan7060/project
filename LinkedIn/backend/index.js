@@ -7,9 +7,18 @@ import cors from "cors";
 import userRouter from './routes/user.routes.js';
 import postRouter from './routes/post.routes.js';
 import connectionRouter from './routes/connection.routes.js';
+import http from "http"
+import { Server } from "socket.io";
 
 dotenv.config();
-let app = express();       
+let app = express();
+let server=http.createServer(app)
+export const io=new Server(server,{
+    cors:({
+    origin:"http://localhost:5173",
+    credentials: true
+    })
+})
 app.use(express.json());
 app.use(cookieParser())
 app.use(cors({
@@ -22,11 +31,19 @@ app.use("/api/user",userRouter);
 app.use("/api/post",postRouter);
 app.use("/api/connection",connectionRouter)
 
+io.on("connection",(socket)=>{
+    console.log("User connected:", socket.id);
+
+   socket.on("disconnect",(socket)=>{
+    console.log("User disconnected:", socket.id);
+})
+   }) 
+
 app.get('/', (req, res) => {
     res.send("Hello World");
 })
 
-app.listen(port, () => {
+server.listen(port, () => {
     connectDb();
     console.log("Server starts");
 })
