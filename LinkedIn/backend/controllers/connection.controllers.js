@@ -1,5 +1,5 @@
-import Connection from "../models/connection.model"
-import User from "../models/user.model"
+import Connection from "../models/connection.model.js"
+import User from "../models/user.model.js"
 
 export const sendConnection =async (req, res) => {
      try{
