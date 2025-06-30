@@ -71,7 +71,7 @@ await handleSendConnection()
 
 
   return (
-    <button className='min-w-[100px] h-[40px] rounded-full border-2 border-[#2dc0ff] text-[#2dc0ff]' onClick={handleClick} >{status}</button>
+    <button className='min-w-[100px] h-[40px] rounded-full border-2 border-[#2dc0ff] text-[#2dc0ff]' onClick={handleClick}  disabled={status=="pending"}>{status}</button>
   )
 }
 
