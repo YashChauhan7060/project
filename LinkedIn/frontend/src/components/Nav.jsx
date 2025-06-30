@@ -17,7 +17,7 @@ function Nav() {
     let {serverUrl}=useContext(authDataContext)
     let navigate=useNavigate()
 
-    if (!userData) return null;
+    if (!userData) return <div>Loading...</div>;
 
 
     const handleSignOut=async ()=>{
@@ -32,6 +32,9 @@ function Nav() {
     }
 }
 
+const handleGetProfile = (userName) => {
+    navigate("/profile");
+};
 
 
 
@@ -40,6 +43,7 @@ function Nav() {
         <div className='flex justify-center items-center gap-[10px]'>
         <div onClick={ ()=>{
             setActiveSearch(false);
+            navigate("/")
         }}>
             <img src={logo2} alt="" className='w-[50px] ml-0' />
         </div>
@@ -60,7 +64,7 @@ function Nav() {
                 </div>
 
                 <div className='text-[19px] font-semibold text-gray-700'>{`${userData.firstName} ${userData.lastName}`}</div>
-                <button className='w-[100%] h-[40px] rounded-full border-2 border-[#2dc0ff] text-[#2dc0ff]'>View Profile</button>
+                <button className='w-[100%] h-[40px] rounded-full border-2 border-[#2dc0ff] text-[#2dc0ff]' onClick={()=>handleGetProfile(userData.userName)}>View Profile</button>
                 <div className='w-full h-[1px] bg-gray-700 '></div>
                 <div className='flex  w-full items-center justify-start text-gray-600 gap-[10px] cursor-pointer' onClick={()=>navigate("/network")}>
                 <FaUserGroup className='w-[23px] h-[23px] text-gray-600 '/>
