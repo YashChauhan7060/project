@@ -13,14 +13,14 @@ let {serverUrl}=useContext(authDataContext)
 let [edit,setEdit]=useState(false)
 let [postData,setPostData]=useState([])
 
-const getCurrentUser=async ()=>{
-  try{
-    let result=await axios.get(serverUrl+"/api/user/currentuser",
-      {withCredentials:true})
-      setUserData(result.data)
+const getCurrentUser = async () => {
+  try {
+    let result = await axios.get(serverUrl + "/api/user/currentuser", { withCredentials: true });
+    // If result.data is an array, use the first user
+    setUserData(Array.isArray(result.data) ? result.data[0] : result.data);
   } catch (error) {
     console.log(error);
-    setUserData(null)
+    setUserData(null);
   }
 }
 

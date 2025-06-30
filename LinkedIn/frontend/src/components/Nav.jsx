@@ -17,6 +17,8 @@ function Nav() {
     let {serverUrl}=useContext(authDataContext)
     let navigate=useNavigate()
 
+    if (!userData) return null;
+
 
     const handleSignOut=async ()=>{
     try {
@@ -24,7 +26,7 @@ function Nav() {
         setUserData(null)
         navigate("/login")
         console.log(result);
-      
+
     } catch (error) {
         console.log(error);
     }
@@ -48,6 +50,7 @@ function Nav() {
             <input type="text" className='w-[80%] h-full bg-transparent  outline-none  border-0 'placeholder='search users...' />
         </form>
         </div>
+        
 
         <div className='flex justify-center items-center gap-[20px]'>
 
@@ -66,11 +69,11 @@ function Nav() {
                 <button className='w-[100%] h-[40px] rounded-full border-2 border-[#ec4545] text-[#ec4545]' onClick={handleSignOut} >Sign Out</button>
             </div>}
             
-            <div className='lg:flex flex-col items-center justify-center cursor-pointer text-gray-600 hidden' >
+            <div className='lg:flex flex-col items-center justify-center cursor-pointer text-gray-600 hidden'  onClick={() => navigate("/")} >
                 <IoMdHome className='w-[23px] h-[23px] text-gray-600'/>
                 <div>Home</div>
             </div>
-            <div className='md:flex flex-col items-center justify-center cursor-pointer text-gray-600 hidden'>
+            <div className='md:flex flex-col items-center justify-center cursor-pointer text-gray-600 hidden'  onClick={()=>navigate("/network")}>
                 <FaUserGroup className='w-[23px] h-[23px] text-gray-600'/>
                 <div>My Networks</div>
             </div>
